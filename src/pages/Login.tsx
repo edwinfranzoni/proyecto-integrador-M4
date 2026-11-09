@@ -1,5 +1,6 @@
 
 
+
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../services/firebase';
@@ -23,29 +24,50 @@ export const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
+
+        console.log('[LOGIN] Inicio del proceso');
 
         try {
+            console.log('[LOGIN] Enviando credenciales a Firebase');
+
             await signInWithEmailAndPassword(auth, email, password);
+
+            console.log('[LOGIN] Firebase autenticó correctamente');
+            console.log('[LOGIN] Ejecutando redirección a /tasks');
+
             window.location.href = '/tasks';
+
+            console.log('[LOGIN] Redirección solicitada');
         } catch (err: any) {
-            console.error('Error al iniciar sesión:', err);
+            console.error('[LOGIN] Error al iniciar sesión:', err);
             setError('Credenciales inválidas. Intenta de nuevo.');
+            setLoading(false);
         }
     };
 
     const handleGoogleLogin = async () => {
         setError('');
+        setLoading(true);
+
+        console.log('[LOGIN GOOGLE] Inicio del proceso');
 
         try {
             await signInWithPopup(auth, googleProvider);
+
+            console.log('[LOGIN GOOGLE] Autenticación correcta');
+            console.log('[LOGIN GOOGLE] Ejecutando redirección a /tasks');
+
             window.location.href = '/tasks';
         } catch (err: any) {
-            console.error('Error al iniciar sesión con Google:', err);
+            console.error('[LOGIN GOOGLE] Error:', err);
             setError('Error al iniciar sesión con Google.');
+            setLoading(false);
         }
     };
 
@@ -66,6 +88,7 @@ export const Login: React.FC = () => {
                         style={styles.input}
                         required
                     />
+
                     <input
                         type="password"
                         placeholder="Contraseña"
@@ -74,15 +97,24 @@ export const Login: React.FC = () => {
                         style={styles.input}
                         required
                     />
-                    <button type="submit" style={styles.buttonPrimary}>
-                        Ingresar
+
+                    <button
+                        type="submit"
+                        style={styles.buttonPrimary}
+                        disabled={loading}
+                    >
+                        {loading ? 'Ingresando...' : 'Ingresar'}
                     </button>
                 </form>
 
                 <div style={styles.divider}>o</div>
 
-                <button onClick={handleGoogleLogin} style={styles.buttonGoogle}>
-                    Continuar con Google
+                <button
+                    onClick={handleGoogleLogin}
+                    style={styles.buttonGoogle}
+                    disabled={loading}
+                >
+                    {loading ? 'Ingresando...' : 'Continuar con Google'}
                 </button>
 
                 <p style={styles.footer}>
