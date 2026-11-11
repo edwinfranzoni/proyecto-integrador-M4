@@ -36,10 +36,12 @@ https://github.com/edwinfranzoni/proyecto-integrador-4
 ### Gestión de tareas
 - Crear tareas con título y descripción.
 - Consultar tareas almacenadas en Firestore.
+- Editar el título y la descripción de las tareas existentes.
 - Actualizar el estado de una tarea entre pendiente y completada.
 - Eliminar tareas.
 - Actualización de la interfaz en tiempo real mediante `onSnapshot`.
 - Asociación de cada tarea con el identificador de su usuario.
+- Protección de los datos mediante reglas de seguridad de Firestore, garantizando que cada usuario solo pueda acceder a sus propias tareas.
 
 ### Envío de correo electrónico
 La aplicación permite enviar un resumen de las tareas al correo electrónico del usuario autenticado.
@@ -218,16 +220,22 @@ Resultado de la última ejecución: **5 pruebas aprobadas en 2 archivos**.
 
 ## Uso de inteligencia artificial
 
-Se utilizó ChatGPT como herramienta de apoyo durante el desarrollo para:
+Se utilizó ChatGPT como herramienta de apoyo durante el desarrollo del proyecto, principalmente para:
 
-- Resolver dudas técnicas sobre React, TypeScript y Firebase.
-- Comprender y depurar errores de configuración.
-- Apoyar la integración de AWS SES y Vercel.
-- Desarrollar y revisar pruebas con Vitest y React Testing Library.
-- Mejorar la documentación del proyecto.
+- Resolver dudas técnicas sobre React, TypeScript, Firebase y JavaScript.
+- Comprender y depurar errores durante la configuración y el desarrollo de la aplicación.
+- Apoyar la integración de AWS SES con funciones serverless de Vercel.
+- Desarrollar y revisar pruebas utilizando Vitest y React Testing Library.
+- Mejorar la documentación y organización del proyecto.
 
-Las sugerencias se revisaron y adaptaron al proyecto. Se utilizaron las pruebas, la compilación y las verificaciones funcionales para comprobar los cambios.
+**Buenas prácticas aplicadas:**
 
+- Revisar y comprender las sugerencias antes de incorporarlas al código.
+- Probar los cambios mediante pruebas automatizadas y verificaciones funcionales.
+- Consultar la documentación y verificar las configuraciones de los servicios utilizados.
+- Evitar exponer credenciales y mantener las variables sensibles en el entorno del servidor.
+
+La inteligencia artificial se utilizó como apoyo, no como sustituto del proceso de aprendizaje y toma de decisiones. Las implementaciones fueron revisadas y adaptadas según las necesidades del proyecto.
 ## Autor
 
 Proyecto desarrollado por **Edwin Hernandez** como parte del bootcamp Henry.
