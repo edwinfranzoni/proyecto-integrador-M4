@@ -1,5 +1,5 @@
-// src/pages/Tasks.tsx
-import React from 'react';
+
+import React, { useState } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { useAuth } from '../hooks/useAuth';
@@ -9,14 +9,21 @@ import { TodoList } from '../components/TodoList';
 
 export const Tasks: React.FC = () => {
     const { user } = useAuth();
-    // Conectamos el hook real pasándole el ID del usuario actual
-    const { tasks, loading, createTask, toggleTask, deleteTask } = useTasks(user?.uid);
+    const {
+        tasks,
+        loading,
+        createTask,
+        toggleTask,
+        editTask,
+        deleteTask
+    } = useTasks(user?.uid);
+
+    const [sendingEmail, setSendingEmail] = useState(false);
 
     const handleLogout = () => {
         signOut(auth);
     };
 
-    // Función para preparar el resumen de texto y enviarlo a la API serverless
     const handleSendEmail = async () => {
         if (tasks.length === 0) {
             alert('No tienes tareas para enviar en el resumen.');
@@ -27,11 +34,16 @@ export const Tasks: React.FC = () => {
             .map(t => `- ${t.title}: ${t.completed ? 'Completada' : 'Pendiente'}`)
             .join('\n');
 
+        setSendingEmail(true);
+
         try {
             const response = await fetch('/api/send-summary', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: user?.email, tasksSummary: summaryText })
+                body: JSON.stringify({
+                    email: user?.email,
+                    tasksSummary: summaryText
+                })
             });
 
             if (response.ok) {
@@ -42,6 +54,8 @@ export const Tasks: React.FC = () => {
         } catch (err) {
             console.error("Error al solicitar envío de email:", err);
             alert('Error de red al intentar enviar el correo.');
+        } finally {
+            setSendingEmail(false);
         }
     };
 
@@ -52,30 +66,43 @@ export const Tasks: React.FC = () => {
                     <h2 style={styles.headerTitle}>Gestor de Tareas</h2>
                     <p style={styles.userEmail}>{user?.email}</p>
                 </div>
-                <button onClick={handleLogout} style={styles.buttonLogout}>Cerrar Sesión</button>
+                <button onClick={handleLogout} style={styles.buttonLogout}>
+                    Cerrar Sesión
+                </button>
             </header>
 
             <main style={styles.main}>
                 <div style={styles.actionContainer}>
-                    <button onClick={handleSendEmail} style={styles.buttonEmail}>
-                        📧 Enviar Resumen por Email (AWS SES)
+                    <button
+                        onClick={handleSendEmail}
+                        disabled={sendingEmail}
+                        style={{
+                            ...styles.buttonEmail,
+                            opacity: sendingEmail ? 0.7 : 1,
+                            cursor: sendingEmail ? 'not-allowed' : 'pointer'
+                        }}
+                    >
+                        {sendingEmail ? 'Enviando correo...' : '📧 Enviar Resumen por Email (AWS SES)'}
                     </button>
                 </div>
 
-                {/* Formulario Modular */}
                 <section style={styles.sectionForm}>
-                    <h3 style={{ marginTop: 0, marginBottom: '12px', color: '#374151' }}>Nueva Tarea</h3>
+                    <h3 style={{ marginTop: 0, marginBottom: '12px', color: '#374151' }}>
+                        Nueva Tarea
+                    </h3>
                     <TodoForm onCreateTask={createTask} />
                 </section>
 
-                {/* Listado Modular Real-Time */}
                 <section style={styles.listSection}>
-                    <h3 style={{ marginTop: 0, marginBottom: '12px', color: '#374151' }}>Mis Pendientes</h3>
+                    <h3 style={{ marginTop: 0, marginBottom: '12px', color: '#374151' }}>
+                        Mis Pendientes
+                    </h3>
                     <TodoList
                         tasks={tasks}
                         loading={loading}
                         onToggle={toggleTask}
                         onDelete={deleteTask}
+                        onEdit={editTask}
                     />
                 </section>
             </main>

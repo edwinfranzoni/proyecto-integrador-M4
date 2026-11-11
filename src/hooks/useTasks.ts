@@ -1,4 +1,4 @@
-// src/hooks/useTasks.ts
+
 import { useState, useEffect } from 'react';
 import { collection, query, where, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../services/firebase';
@@ -9,17 +9,14 @@ export const useTasks = (userId: string | undefined) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Si todavía no hay un usuario autenticado, no intentamos buscar tareas
         if (!userId) {
             setTasks([]);
             setLoading(false);
             return;
         }
 
-        // Consulta filtrando estrictamente por el userId del empleado actual
         const q = query(collection(db, 'tasks'), where('userId', '==', userId));
 
-        // Suscripción en tiempo real (onSnapshot) para actualizar la UI automáticamente
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const tasksData: Task[] = [];
             snapshot.forEach((docSnap) => {
@@ -32,11 +29,10 @@ export const useTasks = (userId: string | undefined) => {
             setLoading(false);
         });
 
-        // Cancelamos la suscripción al desmontar para evitar fugas de memoria (memory leaks)
         return () => unsubscribe();
     }, [userId]);
 
-    // Operación: Crear una nueva tarea
+    // Crear una tarea
     const createTask = async (title: string, description: string) => {
         if (!userId) return;
         await addDoc(collection(db, 'tasks'), {
@@ -48,17 +44,23 @@ export const useTasks = (userId: string | undefined) => {
         });
     };
 
-    // Operación: Marcar como completada o deshacer
+    // Marcar como completada o deshacer
     const toggleTask = async (id: string, currentStatus: boolean) => {
         const taskRef = doc(db, 'tasks', id);
         await updateDoc(taskRef, { completed: !currentStatus });
     };
 
-    // Operación: Eliminar una tarea por completo
+    // Editar título y descripción
+    const editTask = async (id: string, title: string, description: string) => {
+        const taskRef = doc(db, 'tasks', id);
+        await updateDoc(taskRef, { title, description });
+    };
+
+    // Eliminar una tarea
     const deleteTask = async (id: string) => {
         const taskRef = doc(db, 'tasks', id);
         await deleteDoc(taskRef);
     };
 
-    return { tasks, loading, createTask, toggleTask, deleteTask };
+    return { tasks, loading, createTask, toggleTask, editTask, deleteTask };
 };
