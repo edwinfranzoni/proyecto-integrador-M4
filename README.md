@@ -5,7 +5,9 @@ Aplicación web para gestionar tareas personales, desarrollada con React, TypeSc
 ## Demo
 
 **Aplicación desplegada:**
+
 proyecto-integrador-4-2.vercel.app
+
 **Repositorio:**
 https://github.com/edwinfranzoni/proyecto-integrador-4
 
